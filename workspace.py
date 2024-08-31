@@ -1,7 +1,6 @@
 import tkinter as tk
 import random
 from tkinter import messagebox
-from collections import Counter
 
 word_categories = {
     'Fruits': [
@@ -81,7 +80,7 @@ class Hangman_game(tk.Tk):
         self.create_widgets()
 
     def create_widgets(self):
-        welcome_message = f"Welcome {self.player_name} !\n Guess the word in the category: {self.category}"
+        welcome_message = f"Welcome {self.player_name} ! Guess the word in the category: {self.category}"
         self.label = tk.Label(self, text=welcome_message)
         self.label.pack(pady=20)
 
@@ -107,24 +106,24 @@ class Hangman_game(tk.Tk):
         self.entry.delete(0, tk.END)
 
         if not guess.isalpha() or len(guess) != 1:
-            messagebox.showerror('Invalid guess', 'Please enter a single alphabet')
-            return  # Don't decrement chances for invalid input
+            messagebox.showerror('Error', 'Please enter a single alphabet')
+            return
 
         if guess in self.guesses:
-            messagebox.showwarning('Invalid guess', 'You have already guessed this letter')
-            return  # Don't decrement chances for repeated guesses
+            messagebox.showwarning('Error', 'You have already guessed this letter')
+            return
 
-        # Add the guessed letter to the list of guesses
         self.guesses += guess
 
         if guess in self.word:
             self.word_display.set(' '.join([c if c in self.guesses else '_' for c in self.word]))
+            self.guesses += guess
 
             if all([char in self.guesses for char in self.word]):
                 messagebox.showinfo("Congratulations", "You won!")
                 self.quit()
         else:
-            self.chances -= 1  # Decrement chances only if the guess is incorrect
+            self.chances -= 1
 
         self.chances_left.config(text=f"Chances left: {self.chances}")
 
@@ -142,9 +141,6 @@ class Hangman_game(tk.Tk):
             self.chances -= 1
             self.chances_left.config(text=f"Chances left: {self.chances}")
 
-            if self.chances <= 0:
-                messagebox.showinfo("Game Over", f"You lost! The word was '{self.word}'.")
-                self.quit()
     def quit(self):
         self.destroy()
         start_screen = StartScreen()
@@ -153,7 +149,7 @@ class Hangman_game(tk.Tk):
     def update_word_status(self):
         display_text = ''
         for char in self.word:
-            if char in self.letterGuessed:
+            if char in self.word:
                 display_text += char + ' '
             else:
                 display_text += '_ '
